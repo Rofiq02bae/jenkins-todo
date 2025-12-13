@@ -89,7 +89,7 @@ pipeline {
                                 docker pull ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
 
                                 # Jalankan deployment Docker Compose
-                                docker compose -f docker-compose.yml up --force-recreate -d app
+                                docker-compose -f docker-compose.yml up --force-recreate -d app
                                 
                                 echo "Deployment selesai. Akses di http://${REMOTE_IP}:${HOST_PORT}"
 DEPLOY_SCRIPT
