@@ -4,8 +4,6 @@ const { Client } = require('pg');
 const cors = require('cors');
 
 // --- 1. KONFIGURASI DATABASE ---
-// Gunakan environment variables yang diatur di docker-compose.yml
-// --- 1. KONFIGURASI DATABASE ---
 const client = new Client({
     user: process.env.POSTGRES_USER || 'user_todo',
     host: process.env.POSTGRES_HOST || 'todo-db', 
@@ -13,8 +11,8 @@ const client = new Client({
     password: process.env.POSTGRES_PASSWORD || 'password123',
     port: 5432,
     
-    // --- PENTING: TAMBAHKAN TIMEOUT KONEKSI ---
-    connectionTimeoutMillis: 2000, // Gagal setelah 2 detik
+    // PENTING: Untuk memastikan unit test tidak timeout saat DB tidak tersedia
+    connectionTimeoutMillis: 2000, 
 });
 
 // --- 2. FUNGSI INISIALISASI TABEL ---
@@ -34,8 +32,8 @@ async function initializeDatabase() {
         await client.query(createTableQuery);
         console.log("Tabel 'tasks' berhasil dibuat atau sudah ada.");
     } catch (err) {
+        // Log error di sini (ENOTFOUND saat unit test), tetapi server tetap berjalan
         console.error("Gagal membuat tabel:", err.message);
-        // Penting: Jangan biarkan server crash jika DB gagal, agar unit test bisa jalan.
     }
 }
 
@@ -47,18 +45,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors()); // Izinkan CORS untuk permintaan frontend
+app.use(cors()); 
 app.use(bodyParser.json());
-app.use(express.static('public')); // MELAYANI FILE FRONTEND DARI FOLDER 'public'
+// Melayani file frontend (index.html, script.js, style.css) dari folder 'public'
+app.use(express.static('public')); 
 
 // --- 4. ENDPOINT API RESTFUL ---
 
-// Endpoint Health Check
-// app.get('/', (req, res) => {
-//     res.status(200).send("Welcome to Jenkins Todo API (v1.0)");
-// });
-
-// Menjadi ini:
+// Endpoint Health Check: Digunakan untuk memastikan API berjalan (digunakan Jest)
 app.get('/health', (req, res) => {
     res.status(200).send("Welcome to Jenkins Todo API (v1.0)");
 });
@@ -70,7 +64,7 @@ app.get('/tasks', async (req, res) => {
         res.status(200).json(result.rows);
     } catch (err) {
         console.error("Gagal mendapatkan tasks:", err.message);
-        // Mengembalikan 500 jika koneksi DB gagal (penting untuk tes kegagalan DB)
+        // Mengembalikan 500 jika koneksi DB gagal
         res.status(500).send("Koneksi Database Gagal. Cek log.");
     }
 });
@@ -125,7 +119,7 @@ app.delete('/tasks/:id', async (req, res) => {
         if (result.rowCount === 0) {
             return res.status(404).send("Task tidak ditemukan.");
         }
-        res.status(204).send(); // 204 No Content
+        res.status(204).send(); 
     } catch (err) {
         console.error("Gagal menghapus task:", err.message);
         res.status(500).send("Internal Server Error.");
