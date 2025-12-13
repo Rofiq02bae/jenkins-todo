@@ -1,4 +1,4 @@
-const { app, calculateSum } = require('./index');
+const { app, calculateSum } = require('../index');
 const supertest = require('supertest');
 const request = supertest(app);
 
