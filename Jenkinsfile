@@ -13,7 +13,7 @@ pipeline {
         SSH_CREDS_ID = 'deployment-ssh-server' 
         
         // --- VARIABLE DEPLOYMENT SERVER ---
-        REMOTE_IP = "18.136.101.62"
+        REMOTE_IP = "http://ec2-18-136-101-62.ap-southeast-1.compute.amazonaws.com/"
         REMOTE_USER = "ubuntu"
         HOST_PORT = 80             // Port publik di VM host
         CONTAINER_PORT = 3000      // Port internal aplikasi
