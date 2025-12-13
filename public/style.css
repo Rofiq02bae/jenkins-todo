@@ -1,0 +1,107 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e8ecf1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+h1 {
+    text-align: center;
+    color: #34495e;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+#todo-form {
+    display: flex;
+    margin-bottom: 25px;
+}
+
+#todo-input {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px 0 0 6px;
+    font-size: 16px;
+}
+
+#todo-form button {
+    padding: 12px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#todo-form button:hover {
+    background-color: #2980b9;
+}
+
+#todo-list {
+    list-style: none;
+    padding: 0;
+}
+
+#todo-list li {
+    background-color: #ecf0f1;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 5px solid #3498db;
+    transition: background-color 0.3s;
+}
+
+#todo-list li.completed {
+    text-decoration: line-through;
+    color: #7f8c8d;
+    background-color: #f0f4f7;
+    border-left-color: #2ecc71;
+}
+
+#todo-list li span {
+    flex-grow: 1;
+    margin-right: 15px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#todo-list li button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+#todo-list li button:hover {
+    background-color: #c0392b;
+}
+
+#status-message {
+    text-align: center;
+    color: #e74c3c;
+    margin-top: 20px;
+    font-weight: bold;
+}
