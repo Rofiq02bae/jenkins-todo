@@ -29,9 +29,12 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 echo "2. Menjalankan pengujian unit (harus lulus sebelum build)."
-                // Asumsi: 'npm test' ada di package.json dan mengembalikan exit code non-nol jika gagal
-                sh 'npm install'
-                sh 'npm test' 
+                
+                // Gunakan image Node:20-alpine untuk menjalankan 'npm install' dan 'npm test'
+                sh """
+                    docker run --rm -v \$(pwd):/app -w /app node:20-alpine sh -c \
+                        "npm install && npm test"
+                """
             }
         }
 
