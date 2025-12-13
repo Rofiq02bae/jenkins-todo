@@ -50,7 +50,12 @@ app.use(express.static('public')); // MELAYANI FILE FRONTEND DARI FOLDER 'public
 // --- 4. ENDPOINT API RESTFUL ---
 
 // Endpoint Health Check
-app.get('/', (req, res) => {
+// app.get('/', (req, res) => {
+//     res.status(200).send("Welcome to Jenkins Todo API (v1.0)");
+// });
+
+// Menjadi ini:
+app.get('/health', (req, res) => {
     res.status(200).send("Welcome to Jenkins Todo API (v1.0)");
 });
 
