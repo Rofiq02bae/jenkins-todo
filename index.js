@@ -6,9 +6,9 @@ const cors = require('cors');
 // --- 1. KONFIGURASI DATABASE ---
 const client = new Client({
     user: process.env.POSTGRES_USER || 'user_todo',
-    host: process.env.POSTGRES_HOST || 'todo-db', 
+    host: process.env.POSTGRES_HOST || 'db', 
     database: process.env.POSTGRES_DB || 'todo_db',
-    password: process.env.POSTGRES_PASSWORD || 'password123',
+    password: process.env.POSTGRES_PASSWORD || 'supersecretpassword',
     port: 5432,
     
     // PENTING: Untuk memastikan unit test tidak timeout saat DB tidak tersedia
