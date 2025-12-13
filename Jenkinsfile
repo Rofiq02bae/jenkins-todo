@@ -67,29 +67,32 @@ pipeline {
                     withCredentials([sshUserPrivateKey(credentialsId: SSH_CREDS_ID, keyFileVariable: 'SSH_KEY')]) {
                         
                         echo "5a. Menyalin file konfigurasi ke host..."
-                        // --- LANGKAH 1: SALIN FILE DENGAN SCP ---
                         sh "scp -i ${SSH_KEY} -o StrictHostKeyChecking=no docker-compose.yml ${REMOTE_USER}@${REMOTE_IP}:/home/${REMOTE_USER}/app_deployment/docker-compose.yml"
                         
                         echo "5b. Melakukan deployment menggunakan Docker Compose ke ${REMOTE_IP}..."
                         
-                        // --- LANGKAH 2: EKSEKUSI DENGAN SSH ---
                         sh """
                             ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} << 'DEPLOY_SCRIPT'
                                 # Navigasi ke direktori deploy 
                                 cd /home/${REMOTE_USER}/app_deployment || exit
                                 
-                                # Export variabel lingkungan yang dibutuhkan Docker Compose
+                                # Export variabel lingkungan
                                 export REGISTRY="${REGISTRY}"
                                 export IMAGE_NAME="${IMAGE_NAME}"
                                 export BUILD_NUMBER="${BUILD_NUMBER}"
                                 export HOST_PORT="${HOST_PORT}"
-                                # Anda bisa menambahkan variabel DB di sini jika tidak ingin di-hardcode di docker-compose.yml
 
-                                # Pull image baru
+                                # 1. PULL IMAGE TERBARU
                                 docker pull ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
 
-                                # Jalankan deployment Docker Compose
-                                docker compose -f docker-compose.yml up --force-recreate -d app
+                                # 2. HENTIKAN DAN HAPUS SERVICE LAMA (SOLUSI KONFLIK NAMA)
+                                # --v (opsional) akan menghapus volume DB, gunakan hati-hati!
+                                # Jika volume DB penting, gunakan: docker compose down
+                                docker compose down
+
+                                # 3. JALANKAN DEPLOYMENT BARU
+                                # 'up -d' akan membuat ulang service yang diperlukan, termasuk DB jika belum ada.
+                                docker compose -f docker-compose.yml up --force-recreate -d
                                 
                                 echo "Deployment selesai. Akses di http://${REMOTE_IP}:${HOST_PORT}"
 DEPLOY_SCRIPT
