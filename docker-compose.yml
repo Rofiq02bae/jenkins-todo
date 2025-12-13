@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # 1. Service Aplikasi Node.js (Akan di-build oleh Jenkins)
+  app:
+    image: ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER} # Variabel dari Jenkins
+    container_name: todo-app
+    restart: always
+    ports:
+      - "${HOST_PORT}:3000" # Mapping port publik ke port internal 3000
+    depends_on:
+      - db # Pastikan DB siap sebelum App dimulai
+    environment:
+      # Variabel lingkungan untuk koneksi ke kontainer 'db'
+      DB_HOST: db
+      DB_USER: user_todo
+      DB_PASSWORD: supersecretpassword
+      DB_NAME: todo_db
+    networks:
+      - app-network
+
+  # 2. Service Database PostgreSQL
+  db:
+    image: postgres:14-alpine
+    container_name: todo-db
+    restart: always
+    environment:
+      POSTGRES_USER: user_todo
+      POSTGRES_PASSWORD: supersecretpassword
+      POSTGRES_DB: todo_db
+    volumes:
+      - db_data:/var/lib/postgresql/data # Volume untuk persistence data
+    networks:
+      - app-network
+
+# Jaringan Internal Docker
+networks:
+  app-network:
+    driver: bridge
+
+# Volume untuk Menyimpan Data DB Permanen
+volumes:
+  db_data:
+    driver: local
