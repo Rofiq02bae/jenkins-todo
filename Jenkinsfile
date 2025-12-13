@@ -10,7 +10,7 @@ pipeline {
         
         // --- KREDENSIAL JENKINS ID ---
         DOCKER_CREDS_ID = 'docker-hub-creds'
-        SSH_CREDS_ID = 'deployment-ssh-server' 
+        SSH_CREDS_ID = 'depoyment-ssh-server' 
         
         // --- VARIABLE DEPLOYMENT SERVER ---
         REMOTE_IP = "ec2-18-136-101-62.ap-southeast-1.compute.amazonaws.com"
