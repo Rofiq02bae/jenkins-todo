@@ -12,9 +12,9 @@ function calculateSum(a, b) {
 
 // PENTING: Tutup server Express setelah semua test selesai agar Jest bisa keluar
 afterAll(done => {
+    // Kita berikan waktu lebih lama (15 detik) untuk menutup koneksi yang stuck
     server.close(done); 
-});
-
+}, 15000); // <-- TAMBAHKAN TIMEOUT JEST YANG LEBIH BESAR UNTUK CLEANUP
 
 // --- TEST SUITES ---
 
