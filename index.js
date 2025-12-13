@@ -17,6 +17,12 @@ const client = new Client({
 
 // --- 2. FUNGSI INISIALISASI TABEL ---
 async function initializeDatabase() {
+    // Di lingkungan Jest (CI), jangan coba koneksi DB agar tidak stuck.
+    if (process.env.NODE_ENV === 'test') {
+        console.log("Lingkungan Test terdeteksi. Melewati koneksi DB.");
+        return; 
+    }
+
     try {
         await client.connect();
         console.log("Koneksi Database Berhasil!");
@@ -32,7 +38,7 @@ async function initializeDatabase() {
         await client.query(createTableQuery);
         console.log("Tabel 'tasks' berhasil dibuat atau sudah ada.");
     } catch (err) {
-        // Log error di sini (ENOTFOUND saat unit test), tetapi server tetap berjalan
+        // Log error di sini (ENOTFOUND saat CI), tetapi server tetap berjalan
         console.error("Gagal membuat tabel:", err.message);
     }
 }
@@ -52,7 +58,7 @@ app.use(express.static('public'));
 
 // --- 4. ENDPOINT API RESTFUL ---
 
-// Endpoint Health Check: Digunakan untuk memastikan API berjalan (digunakan Jest)
+// Endpoint Health Check: Digunakan oleh Jest untuk memastikan API berjalan
 app.get('/health', (req, res) => {
     res.status(200).send("Welcome to Jenkins Todo API (v1.0)");
 });
@@ -64,7 +70,7 @@ app.get('/tasks', async (req, res) => {
         res.status(200).json(result.rows);
     } catch (err) {
         console.error("Gagal mendapatkan tasks:", err.message);
-        // Mengembalikan 500 jika koneksi DB gagal
+        // Mengembalikan 500 jika koneksi DB gagal atau query timeout
         res.status(500).send("Koneksi Database Gagal. Cek log.");
     }
 });
