@@ -5,12 +5,16 @@ const cors = require('cors');
 
 // --- 1. KONFIGURASI DATABASE ---
 // Gunakan environment variables yang diatur di docker-compose.yml
+// --- 1. KONFIGURASI DATABASE ---
 const client = new Client({
     user: process.env.POSTGRES_USER || 'user_todo',
     host: process.env.POSTGRES_HOST || 'todo-db', 
     database: process.env.POSTGRES_DB || 'todo_db',
     password: process.env.POSTGRES_PASSWORD || 'password123',
     port: 5432,
+    
+    // --- PENTING: TAMBAHKAN TIMEOUT KONEKSI ---
+    connectionTimeoutMillis: 2000, // Gagal setelah 2 detik
 });
 
 // --- 2. FUNGSI INISIALISASI TABEL ---
