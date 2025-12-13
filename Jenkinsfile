@@ -66,12 +66,16 @@ pipeline {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: SSH_CREDS_ID, keyFileVariable: 'SSH_KEY')]) {
                         
-                        echo "5. Deploying menggunakan Docker Compose ke ${REMOTE_IP}..."
-
-                        // Perintah Deployment yang kompleks dikirim melalui SSH
+                        echo "5a. Menyalin file konfigurasi ke host..."
+                        // --- LANGKAH 1: SALIN FILE DENGAN SCP ---
+                        sh "scp -i ${SSH_KEY} -o StrictHostKeyChecking=no docker-compose.yml ${REMOTE_USER}@${REMOTE_IP}:/home/${REMOTE_USER}/app_deployment/docker-compose.yml"
+                        
+                        echo "5b. Melakukan deployment menggunakan Docker Compose ke ${REMOTE_IP}..."
+                        
+                        // --- LANGKAH 2: EKSEKUSI DENGAN SSH ---
                         sh """
                             ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_IP} << 'DEPLOY_SCRIPT'
-                                # Navigasi ke direktori deploy (misalnya di home user)
+                                # Navigasi ke direktori deploy 
                                 cd /home/${REMOTE_USER}/app_deployment || exit
                                 
                                 # Export variabel lingkungan yang dibutuhkan Docker Compose
@@ -79,13 +83,12 @@ pipeline {
                                 export IMAGE_NAME="${IMAGE_NAME}"
                                 export BUILD_NUMBER="${BUILD_NUMBER}"
                                 export HOST_PORT="${HOST_PORT}"
+                                # Anda bisa menambahkan variabel DB di sini jika tidak ingin di-hardcode di docker-compose.yml
 
                                 # Pull image baru
                                 docker pull ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
 
                                 # Jalankan deployment Docker Compose
-                                # --force-recreate: Ganti kontainer lama dengan yang baru
-                                # -d: Detached mode (background)
                                 docker compose -f docker-compose.yml up --force-recreate -d app
                                 
                                 echo "Deployment selesai. Akses di http://${REMOTE_IP}:${HOST_PORT}"
