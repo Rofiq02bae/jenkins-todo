@@ -28,14 +28,20 @@ describe('Unit Test: Basic Math', () => {
 
 describe('API Integration Test: Health Check', () => {
     // GANTI: Kita tidak perlu lagi mengekspor pesan dalam body, cukup status 200.
-    test('GET / should return 200 and a welcome message', async () => {
-        const response = await request.get('/');
+    // test('GET / should return 200 and a welcome message', async () => {
+    //     const response = await request.get('/');
+        
+    //     expect(response.statusCode).toBe(200);
+    //     // Cek apakah body merespons dengan teks yang kita kirim di index.js
+    //     expect(response.text).toContain("Welcome to Jenkins Todo API"); 
+    // });
+
+    test('GET /health should return 200 and a welcome message', async () => { // Perubahan di sini
+        const response = await request.get('/health'); // Perubahan di sini
         
         expect(response.statusCode).toBe(200);
-        // Cek apakah body merespons dengan teks yang kita kirim di index.js
         expect(response.text).toContain("Welcome to Jenkins Todo API"); 
     });
-    
     // Test ini akan LULUS karena koneksi DB pasti gagal di lingkungan CI yang terisolasi.
     test('GET /tasks should return 500 if DB connection fails (CI environment)', async () => {
         const response = await request.get('/tasks');
