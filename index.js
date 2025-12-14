@@ -121,14 +121,6 @@ app.post('/tasks', async (req, res) => {
 // Inisialisasi pengumpul metrik default
 collectDefaultMetrics({ prefix: 'todo_app_' }); // Tambahkan prefix agar mudah diidentifikasi
 
-// Buat counter untuk permintaan API
-const httpRequestCounter = new promClient.Counter({
-    name: 'todo_app_http_requests_total',
-    help: 'Total number of HTTP requests',
-    labelNames: ['method', 'route', 'statuscode'],
-});
-
-
 // --- Tambahkan Endpoint Baru untuk Prometheus ---
 app.get('/metrics', async (req, res) => {
     res.set('Content-Type', promClient.register.contentType);
