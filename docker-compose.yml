@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 1. Service Aplikasi Node.js (Akan di-build oleh Jenkins)
   app:
@@ -35,7 +33,7 @@ services:
     networks:
       - app-network
 
-# --- SERVICE BARU: PROMETHEUS ---
+  # --- SERVICE BARU: PROMETHEUS ---
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -51,7 +49,7 @@ services:
       - "9090:9090" # Port Prometheus
     restart: always
     depends_on:
-      - todo-app
+      - app
 
   # --- SERVICE BARU: GRAFANA ---
   grafana:
