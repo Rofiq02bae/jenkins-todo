@@ -118,9 +118,6 @@ app.post('/tasks', async (req, res) => {
     }
 });
 
-// Inisialisasi pengumpul metrik default
-collectDefaultMetrics({ prefix: 'todo_app_' }); // Tambahkan prefix agar mudah diidentifikasi
-
 // --- Tambahkan Endpoint Baru untuk Prometheus ---
 app.get('/metrics', async (req, res) => {
     res.set('Content-Type', promClient.register.contentType);
