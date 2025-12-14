@@ -50,6 +50,8 @@ services:
     restart: always
     depends_on:
       - app
+    networks:
+      - app-network
 
   # --- SERVICE BARU: GRAFANA ---
   grafana:
@@ -60,6 +62,8 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
     restart: always
+    networks:
+      - app-network
 # Jaringan Internal Docker
 networks:
   app-network:
