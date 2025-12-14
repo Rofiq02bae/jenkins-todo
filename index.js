@@ -2,6 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { Client } = require('pg');
 const cors = require('cors');
+const promClient = require('prom-client'); // Import
+const collectDefaultMetrics = promClient.collectDefaultMetrics;
+
+// Inisialisasi pengumpul metrik default
+collectDefaultMetrics({ prefix: 'todo_app_' }); // Tambahkan prefix agar mudah diidentifikasi
 
 // --- 1. KONFIGURASI DATABASE ---
 const client = new Client({
@@ -13,6 +18,13 @@ const client = new Client({
     
     // PENTING: Untuk memastikan unit test tidak timeout saat DB tidak tersedia
     connectionTimeoutMillis: 2000, 
+});
+
+// Buat counter untuk permintaan API
+const httpRequestCounter = new promClient.Counter({
+    name: 'todo_app_http_requests_total',
+    help: 'Total number of HTTP requests',
+    labelNames: ['method', 'route', 'statuscode'],
 });
 
 // --- 2. FUNGSI INISIALISASI TABEL ---
@@ -53,6 +65,19 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors()); 
 app.use(bodyParser.json());
+
+// Middleware untuk menghitung semua permintaan
+app.use((req, res, next) => {
+    // Tambahkan logika untuk menghitung permintaan sebelum respons dikirim
+    res.on('finish', () => {
+        httpRequestCounter.inc({
+            method: req.method,
+            route: req.path,
+            statuscode: res.statusCode,
+        });
+    });
+    next();
+});
 // Melayani file frontend (index.html, script.js, style.css) dari folder 'public'
 app.use(express.static('public')); 
 
@@ -91,6 +116,23 @@ app.post('/tasks', async (req, res) => {
         console.error("Gagal menambahkan task:", err.message);
         res.status(500).send("Internal Server Error.");
     }
+});
+
+// Inisialisasi pengumpul metrik default
+collectDefaultMetrics({ prefix: 'todo_app_' }); // Tambahkan prefix agar mudah diidentifikasi
+
+// Buat counter untuk permintaan API
+const httpRequestCounter = new promClient.Counter({
+    name: 'todo_app_http_requests_total',
+    help: 'Total number of HTTP requests',
+    labelNames: ['method', 'route', 'statuscode'],
+});
+
+
+// --- Tambahkan Endpoint Baru untuk Prometheus ---
+app.get('/metrics', async (req, res) => {
+    res.set('Content-Type', promClient.register.contentType);
+    res.end(await promClient.register.metrics());
 });
 
 // PUT /tasks/:id: Mengubah status tugas
